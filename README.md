@@ -6,7 +6,7 @@
 
 ---
 
-![Project Screenshot](assets/gui.png)
+![Project Screenshot](assets/Gui.png)
 
 ## Table of Contents
 
