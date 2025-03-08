@@ -2,21 +2,23 @@
 # Developer Documentation for the Utvecklar-Dashboard Framework
 
 > **Overview:**  
-> The Utvecklar-Dashboard framework is a modular developer dashboard application built using PySide6. It features a frameless main window with a custom title bar, multiple functional tabs (including a search dashboard, code module manager, and AI prompt vault), and robust support for managing, editing, and analyzing code modules. The framework also integrates code analysis and generation utilities for Python and JavaScript, along with an LLM integration system for automated code updates.
+> The Utvecklar-Dashboard framework is a modular developer dashboard application built using PySide6. It features a frameless main window with a custom title bar, multiple functional tabs (including a search dashboard, code module manager), and robust support for managing, editing, and analyzing code modules. The framework also integrates code analysis and generation utilities for Python and JavaScript, along with an LLM integration system for automated code updates.
 
 ---
+
+![Project Screenshot](assets/gui.png)
 
 ## Table of Contents
 
 1. [Architecture Overview](#architecture-overview)
 2. [File Structure](#file-structure)
 3. [Main Components](#main-components)
+4. [LLM System Prompt Integration](#llm-system-prompt-integration)
    - [Dashboard (dashboard.py)](#dashboard-dashboardpy)
    - [Code Module Widget (code_module_widget.py)](#code-module-widget-code_module_widgetpy)
    - [Code Module Tab (code_module_tab.py)](#code-module-tab-code_module_tabpy)
    - [Code Utilities (utils/code_utils.py)](#code-utilities-utilscode_utilspy)
-4. [UI and Theming](#ui-and-theming)
-5. [LLM System Prompt Integration](#llm-system-prompt-integration)
+5. [UI and Theming](#ui-and-theming)
 6. [Extending and Maintaining the Framework](#extending-and-maintaining-the-framework)
 7. [Usage and Workflow](#usage-and-workflow)
 8. [Developer Notes and Best Practices](#developer-notes-and-best-practices)
@@ -83,6 +85,52 @@ Additional utility files (e.g., `card_utils.py`) are used for creating UI cards,
 - **Important Methods:**
   - `__init__`: Sets up window flags, creates the main widget and layout, and applies the theme.
   - Mouse event overrides (e.g., `mousePressEvent`, `mouseMoveEvent`) to support dragging of the frameless window.
+
+---
+
+## LLM System Prompt Integration
+
+The dashboard integrates an LLM (Large Language Model) system to assist with automated code modifications, analysis, and improvements directly within the module dashboard. Here’s how it works:
+
+- **System Prompt Overview:**  
+  The LLM system prompt is written in Swedish and provides detailed instructions for the AI on how to interpret and execute code management commands. Despite the prompt being in Swedish, the rest of the documentation and user interface remain in English. The system prompt guides the LLM on tasks such as adding new functions or classes, updating existing code, and suggesting improvements.
+
+- **Command Structure:**  
+  The prompt defines a set of commands that the LLM can process, including:
+  - **Adding Code:**  
+    - `/add_function <function_name>`  
+      _Example:_ Generates a complete Python function template with proper docstrings and formatting.
+    - `/add_class <class_name>`  
+      _Example:_ Generates a class template with an initializer and space for methods.
+  - **Updating Code:**  
+    - `/update_function <function_name>`  
+    - `/update_class <class_name>`  
+    - `/update_method <class_name> <method_name>`  
+      _Example:_ Updates an existing function or class method with new implementation.
+  - **Variable Management:**  
+    - `/update_variable <variable_name> <new_value>`  
+    - `/add_variable <variable_name> <value>`
+  - **Analytical Commands:**  
+    - `/analyze_module`  
+    - `/suggest_improvements`  
+    - `/find_function <search_term>`  
+    - `/find_class <search_term>`
+
+- **Key Principles in the LLM Prompt:**  
+  The prompt also emphasizes:
+  - **Indentation:** Ensuring proper indentation (4 spaces for Python and 2 spaces for JavaScript).
+  - **Documentation:** Including detailed docstrings or JSDoc comments.
+  - **Code Formatting:** Adhering to language-specific style guidelines (e.g., PEP 8 for Python).
+  - **Precision in Variable and Method Operations:** Clear syntax for variable updates and method modifications.
+
+- **Usage within the Dashboard:**  
+  Inside the CodeModuleWidget, the AI integration tab allows developers to paste or generate code changes using these commands. When a command is issued, the system prompt guides the LLM to generate code that conforms to the existing code style and integrates seamlessly into the module. This ensures that updates are consistent with the rest of the application.
+
+- **Benefits:**  
+  - **Consistent Code Quality:** The prompt enforces coding standards and documentation practices.
+  - **Streamlined Updates:** Developers can quickly update or add code using structured commands.
+  - **Enhanced Analysis:** The LLM can analyze code and suggest improvements based on the guidelines provided.
+![Project Screenshot](assets/Metadata_AI-Integration.png)
 
 ---
 
@@ -159,50 +207,6 @@ Additional utility files (e.g., `card_utils.py`) are used for creating UI cards,
 - **Responsiveness:**  
   Layouts are managed using QVBoxLayout, QHBoxLayout, and QGridLayout to ensure the application scales well with window resizing.
 
----
-
-## LLM System Prompt Integration
-
-The dashboard integrates an LLM (Large Language Model) system to assist with automated code modifications, analysis, and improvements directly within the module dashboard. Here’s how it works:
-
-- **System Prompt Overview:**  
-  The LLM system prompt is written in Swedish and provides detailed instructions for the AI on how to interpret and execute code management commands. Despite the prompt being in Swedish, the rest of the documentation and user interface remain in English. The system prompt guides the LLM on tasks such as adding new functions or classes, updating existing code, and suggesting improvements.
-
-- **Command Structure:**  
-  The prompt defines a set of commands that the LLM can process, including:
-  - **Adding Code:**  
-    - `/add_function <function_name>`  
-      _Example:_ Generates a complete Python function template with proper docstrings and formatting.
-    - `/add_class <class_name>`  
-      _Example:_ Generates a class template with an initializer and space for methods.
-  - **Updating Code:**  
-    - `/update_function <function_name>`  
-    - `/update_class <class_name>`  
-    - `/update_method <class_name> <method_name>`  
-      _Example:_ Updates an existing function or class method with new implementation.
-  - **Variable Management:**  
-    - `/update_variable <variable_name> <new_value>`  
-    - `/add_variable <variable_name> <value>`
-  - **Analytical Commands:**  
-    - `/analyze_module`  
-    - `/suggest_improvements`  
-    - `/find_function <search_term>`  
-    - `/find_class <search_term>`
-
-- **Key Principles in the LLM Prompt:**  
-  The prompt also emphasizes:
-  - **Indentation:** Ensuring proper indentation (4 spaces for Python and 2 spaces for JavaScript).
-  - **Documentation:** Including detailed docstrings or JSDoc comments.
-  - **Code Formatting:** Adhering to language-specific style guidelines (e.g., PEP 8 for Python).
-  - **Precision in Variable and Method Operations:** Clear syntax for variable updates and method modifications.
-
-- **Usage within the Dashboard:**  
-  Inside the CodeModuleWidget, the AI integration tab allows developers to paste or generate code changes using these commands. When a command is issued, the system prompt guides the LLM to generate code that conforms to the existing code style and integrates seamlessly into the module. This ensures that updates are consistent with the rest of the application.
-
-- **Benefits:**  
-  - **Consistent Code Quality:** The prompt enforces coding standards and documentation practices.
-  - **Streamlined Updates:** Developers can quickly update or add code using structured commands.
-  - **Enhanced Analysis:** The LLM can analyze code and suggest improvements based on the guidelines provided.
 
 ---
 
